@@ -1,0 +1,45 @@
+# BloxCode Plus Proprietary Source License
+
+Copyright (c) 2026 projectx667. All rights reserved.
+
+## 1. Scope
+
+This license applies only to the original BloxCode Plus materials authored by or for projectx667 after the BloxCode Plus fork was created (the **BloxCode Plus Materials**). These materials include, without limitation, the local-first Electron integration, the BloxCode Plus renderer and interface changes, the BloxCode Plus block and Luau-generator additions, the BloxCode Plus documentation, and the BloxCode Plus name and presentation where protected by applicable law.
+
+This license does **not** apply to, and does not replace, any rights granted for third-party or pre-existing materials included in this repository. In particular, it does not restrict code or assets originating from BloxCode, Blockly, Bootstrap, jQuery, jsTree, Electron, or other components whose rights are identified in [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md).
+
+## 2. Permitted use of official releases
+
+Subject to this license, you may download, install, run, and use an unmodified official BloxCode Plus release for personal, educational, evaluation, or internal development use.
+
+## 3. Restrictions on BloxCode Plus Materials
+
+Except where projectx667 gives prior written permission, you may not:
+
+- copy, publish, distribute, sublicense, rent, lease, sell, or otherwise commercially exploit the BloxCode Plus Materials;
+- modify, translate, adapt, or create derivative works from the BloxCode Plus Materials;
+- remove or alter copyright, attribution, license, or proprietary notices;
+- present an altered build, a fork, or a related product as an official BloxCode Plus release; or
+- use the name **BloxCode Plus**, its logo, or confusingly similar branding to imply endorsement, affiliation, or origin.
+
+These restrictions apply only to the BloxCode Plus Materials and cannot withdraw permissions already granted by the licenses governing excluded third-party or pre-existing materials.
+
+## 4. Source availability
+
+Viewing or accessing source code does not grant a license beyond the limited permissions stated above. The repository may be made available privately to permitted collaborators, but access itself is not permission to redistribute or commercialize the BloxCode Plus Materials.
+
+## 5. Commercial and other permissions
+
+Commercial use, redistribution, white-label distribution, integration into another product, or any permission not expressly granted by this license requires a separate written agreement from projectx667. Requests can be made through the project’s GitHub contact channel.
+
+## 6. No trademark license
+
+No trademark, trade-name, logo, or branding rights are granted by this license. Any protection for the BloxCode Plus name or visual identity depends on applicable law and, where relevant, separate registration; this license alone does not create a registered trademark.
+
+## 7. Disclaimer and limitation of liability
+
+THE BLOXCODE PLUS MATERIALS ARE PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, OR NON-INFRINGEMENT. TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, PROJECTX667 WILL NOT BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM THE BLOXCODE PLUS MATERIALS OR THEIR USE.
+
+## 8. Contact and governing terms
+
+If any provision of this license is unenforceable, the remaining provisions remain effective to the maximum extent permitted by applicable law. This license does not limit any mandatory rights that applicable law gives to users or consumers.

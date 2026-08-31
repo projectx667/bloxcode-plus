@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>BloxCode Plus</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./blockly_compressed.js"></script>
+  <script src="./blocks_compressed.js"></script>
+  <script src="./lua_compressed.js"></script>
+  <script src="./en.js"></script>
+  <script src="./toolbox.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="brand" aria-label="BloxCode Plus">
+        <img src="bloxcode-plus-logo-truncated.png" alt="BloxCode Plus logo" class="brand-logo">
+        <span class="brand-edition">Plus</span>
+      </div>
+      <div class="header-actions" aria-label="Project actions">
+        <button id="new-project-button" class="button button-quiet" type="button" title="New project (Ctrl+N)">New</button>
+        <button id="rename-project-button" class="button button-quiet" type="button" title="Rename this project">Rename</button>
+        <button id="open-project-button" class="button button-quiet" type="button" title="Open a .blox project">Open</button>
+        <button id="save-project-button" class="button" type="button" title="Save project (Ctrl+S)">Save .blox</button>
+      </div>
+    </header>
+
+    <main class="workspace-layout">
+      <aside class="sidebar sidebar-left" aria-label="Block library">
+        <section class="panel-section">
+          <div class="section-heading">
+            <h1>Block library</h1>
+            <span class="section-count" id="block-count">0 blocks</span>
+          </div>
+          <label class="visually-hidden" for="block-search">Search blocks</label>
+          <div class="search-field">
+            <input id="block-search" type="search" autocomplete="off" placeholder="Search blocks…">
+            <button id="clear-search-button" class="icon-button" type="button" aria-label="Clear block search" hidden>×</button>
+          </div>
+          <div id="search-results" class="search-results" aria-live="polite" hidden></div>
+        </section>
+
+        <section class="panel-section templates-section" aria-labelledby="templates-heading">
+          <div class="section-heading">
+            <h2 id="templates-heading">Quick start</h2>
+          </div>
+          <button class="template-card" type="button" data-template="hello-player"><strong>Hello, player</strong></button>
+          <button class="template-card" type="button" data-template="touched-part"><strong>Touched part</strong></button>
+          <button class="template-card" type="button" data-template="leaderstats"><strong>Leaderstats</strong></button>
+          <button class="template-card" type="button" data-template="input-action"><strong>Keyboard action</strong></button>
+        </section>
+      </aside>
+
+      <section class="editor-panel" aria-label="Blockly workspace">
+        <div class="panel-toolbar">
+          <div>
+            <h2 id="project-name">Untitled project</h2>
+            <p id="project-state">Local project</p>
+          </div>
+          <div class="workspace-actions">
+            <button id="reset-workspace-button" class="button button-quiet" type="button" title="Clear the workspace">Clear workspace</button>
+          </div>
+        </div>
+        <div id="blocklyDiv" aria-label="Block coding workspace"></div>
+      </section>
+
+      <aside class="sidebar sidebar-right" aria-label="Generated Luau output">
+        <section class="code-panel">
+          <div class="section-heading code-heading">
+            <h2>Luau</h2>
+            <div class="code-actions">
+              <label class="target-select" for="script-target">
+                <span>Studio location</span>
+                <select id="script-target">
+                  <option value="server-script">ServerScriptService</option>
+                  <option value="local-player">StarterPlayerScripts</option>
+                  <option value="local-gui">StarterGui</option>
+                  <option value="local-character">StarterCharacterScripts</option>
+                  <option value="shared-module">ReplicatedStorage</option>
+                </select>
+              </label>
+              <button id="export-lua-button" class="button button-quiet" type="button">Export .lua</button>
+              <button id="copy-code-button" class="button button-quiet" type="button">Copy</button>
+            </div>
+          </div>
+          <pre id="lua-output" tabindex="0"><code>-- Add blocks to generate Luau code.</code></pre>
+          <div id="copy-feedback" class="status-message" aria-live="polite"></div>
+        </section>
+      </aside>
+    </main>
+
+    <div id="rename-dialog" class="dialog-backdrop" role="presentation" hidden>
+      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="rename-dialog-title">
+        <form id="rename-project-form">
+          <h2 id="rename-dialog-title">Rename project</h2>
+          <label for="rename-project-input">Project name</label>
+          <input id="rename-project-input" name="project-name" type="text" maxlength="90" autocomplete="off" required>
+          <div class="dialog-actions">
+            <button id="rename-cancel-button" class="button button-quiet" type="button">Cancel</button>
+            <button class="button" type="submit">Rename</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div id="blockly-prompt-dialog" class="dialog-backdrop" role="presentation" hidden>
+      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="blockly-prompt-title">
+        <form id="blockly-prompt-form">
+          <h2 id="blockly-prompt-title">Create variable</h2>
+          <label id="blockly-prompt-label" for="blockly-prompt-input">Variable name</label>
+          <input id="blockly-prompt-input" name="blockly-prompt" type="text" maxlength="90" autocomplete="off" required>
+          <div class="dialog-actions">
+            <button id="blockly-prompt-cancel-button" class="button button-quiet" type="button">Cancel</button>
+            <button id="blockly-prompt-submit-button" class="button" type="submit">Create</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <div id="blockly-confirm-dialog" class="dialog-backdrop" role="presentation" hidden>
+      <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="blockly-confirm-title" aria-describedby="blockly-confirm-message">
+        <div class="dialog-content">
+          <h2 id="blockly-confirm-title">Confirm</h2>
+          <p id="blockly-confirm-message"></p>
+          <div class="dialog-actions">
+            <button id="blockly-confirm-cancel-button" class="button button-quiet" type="button">Cancel</button>
+            <button id="blockly-confirm-submit-button" class="button" type="button">Continue</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+  </div>
+
+  <script src="./blocks.js"></script>
+  <script src="./generators/roblox-lua.js"></script>
+  <script src="./blocks/objects.js"></script>
+  <script src="./blocks/players.js"></script>
+  <script src="./blocks/events.js"></script>
+  <script src="./blocks/values.js"></script>
+  <script src="./blocks/gui-builder.js"></script>
+  <script src="./blocks/input.js"></script>
+  <script src="./blocks/network.js"></script>
+  <script src="./blocks/data-safe.js"></script>
+  <script src="./script-context.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
