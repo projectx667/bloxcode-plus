@@ -1,7 +1,7 @@
 {
   "name": "bloxcode-plus",
   "productName": "BloxCode Plus",
-  "version": "2.0.0",
+  "version": "1.1.0",
   "description": "Desktop visual editor for Roblox Luau, built with Blockly and Electron.",
   "main": "main.js",
   "scripts": {

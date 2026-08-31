@@ -1,27 +1,41 @@
-# Example projects
+# Templates
 
-The [`examples`](../examples) folder contains `.blox` workspaces. Each project stores its selected Studio location. All examples except the shop client target `ServerScriptService`.
+BloxCode Plus includes nine Templates in the left sidebar. Click a button to load the connected blocks and the intended Roblox Studio location.
+
+The Templates are made with the blocks included in BloxCode Plus. Open one to see how the blocks fit together, then change or extend it before copying the generated Luau to Roblox Studio.
 
 ## Hello, player
 
-[`hello-player.blox`](../examples/hello-player.blox) demonstrates a player-join event with a generated player reference and requires no scene setup.
+The **Hello, player** Template listens for a player joining and prints a welcome message. It targets `ServerScriptService`.
 
-## Collectible Leaderstats
+## Touched part
 
-[`collectible-leaderstats.blox`](../examples/collectible-leaderstats.blox) creates a `Coins` leaderstat when a player joins, configures a collectible and increments the value on contact. It requires a `BasePart` named `Coin` under `Workspace`. The player lookup remains in an Advanced block because no dedicated block represents it yet.
+The **Touched part** Template listens for contact with a part and prints a message. It targets `ServerScriptService`.
 
-## Checkpoint Progression
+## Leaderstats
 
-[`checkpoint-progression.blox`](../examples/checkpoint-progression.blox) creates a `Checkpoint` leaderstat, loads a saved value with the DataStore block and demonstrates a checkpoint loop. It requires a `Checkpoints` folder under `Workspace` containing parts named with checkpoint numbers. The loop and dynamic player lookup remain in Advanced Luau; the player event, leaderstat and DataStore load remain visible as blocks.
+The **Leaderstats** Template creates a `Coins` leaderstat when a player joins. It targets `ServerScriptService`.
+
+## Keyboard action
+
+The **Keyboard action** Template listens for the `Space` key and prints a message when it is pressed. It targets `StarterPlayerScripts`.
+
+## Checkpoint progression
+
+The **Checkpoint progression** Template shows a checkpoint workflow with player data and checkpoint values. It targets `ServerScriptService`.
 
 ## Proximity Prompt Door
 
-[`proximity-prompt-door.blox`](../examples/proximity-prompt-door.blox) creates a `ProximityPrompt` under a part named `Door`, configures its text and opens the door when the prompt is triggered. It requires a `BasePart` named `Door` under `Workspace`.
+The **Proximity Prompt Door** Template configures a prompt on a door and updates the door when it is triggered. It targets `ServerScriptService`.
 
-## Validated shop
+## Speed Boost
 
-The shop workflow uses two workspaces and requires a `RemoteEvent` named `ShopRequest` in `ReplicatedStorage`.
+The **Speed Boost** Template gets the local character Humanoid and sets `WalkSpeed` to `32`. It targets `StarterPlayerScripts`.
 
-[`validated-shop-client.blox`](../examples/validated-shop-client.blox) targets `StarterGui`. It creates a small GUI, labels a button and sends the item identifier `StarterPack` when the button is clicked.
+## Health and Damage
 
-[`validated-shop-server.blox`](../examples/validated-shop-server.blox) receives that request, verifies the item identifier, checks the player’s `Coins` leaderstat and removes the cost. The final Advanced block marks the server-owned point at which item granting belongs.
+The **Health and Damage** Template changes a Humanoid’s `Health`, applies damage and reports the new value. It targets `ServerScriptService`.
+
+## Validated Shop
+
+The **Validated Shop** Template shows a server-side RemoteEvent flow for validating a shop request. It targets `ServerScriptService`.

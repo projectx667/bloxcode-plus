@@ -42,15 +42,20 @@
           <div id="search-results" class="search-results" aria-live="polite" hidden></div>
         </section>
 
-        <section class="panel-section templates-section" aria-labelledby="templates-heading">
-          <div class="section-heading">
-            <h2 id="templates-heading">Quick start</h2>
+        <details class="panel-section templates-section" open>
+          <summary class="templates-summary"><span id="templates-heading" class="templates-title">Templates</span></summary>
+          <div id="templates-content" class="templates-content">
+            <button class="template-card" type="button" data-template="hello-player"><span>Hello, player</span></button>
+            <button class="template-card" type="button" data-template="touched-part"><span>Touched part</span></button>
+            <button class="template-card" type="button" data-template="leaderstats"><span>Leaderstats</span></button>
+            <button class="template-card" type="button" data-template="input-action"><span>Keyboard action</span></button>
+            <button class="template-card" type="button" data-template="checkpoint-progression"><span>Checkpoint progression</span></button>
+            <button class="template-card" type="button" data-template="proximity-prompt-door"><span>Proximity Prompt Door</span></button>
+            <button class="template-card" type="button" data-template="speed-boost"><span>Speed Boost</span></button>
+            <button class="template-card" type="button" data-template="health-and-damage"><span>Health and Damage</span></button>
+            <button class="template-card" type="button" data-template="validated-shop"><span>Validated Shop</span></button>
           </div>
-          <button class="template-card" type="button" data-template="hello-player"><strong>Hello, player</strong></button>
-          <button class="template-card" type="button" data-template="touched-part"><strong>Touched part</strong></button>
-          <button class="template-card" type="button" data-template="leaderstats"><strong>Leaderstats</strong></button>
-          <button class="template-card" type="button" data-template="input-action"><strong>Keyboard action</strong></button>
-        </section>
+        </details>
       </aside>
 
       <section class="editor-panel" aria-label="Blockly workspace">
@@ -87,6 +92,7 @@
           </div>
           <pre id="lua-output" tabindex="0"><code>-- Add blocks to generate Luau code.</code></pre>
           <div id="copy-feedback" class="status-message" aria-live="polite"></div>
+          <div id="validation-message" class="status-message" role="status" aria-live="polite"></div>
         </section>
       </aside>
     </main>
@@ -144,6 +150,8 @@
   <script src="./blocks/input.js"></script>
   <script src="./blocks/network.js"></script>
   <script src="./blocks/data-safe.js"></script>
+  <script src="./blocks/plus-features.js"></script>
+  <script src="./blocks/roblox-core.js"></script>
   <script src="./script-context.js"></script>
   <script src="./script.js"></script>
 </body>

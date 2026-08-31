@@ -1,18 +1,32 @@
 # Using BloxCode Plus
 
-## Start a workspace
+## Start a project
 
-Choose **New** to start with an empty workspace, or select one of the four **Quick start** workspaces in the left-hand panel. They cover player messages, touched parts, leaderstats and keyboard input.
+Click **New** to open an empty workspace, or choose a Template in the left sidebar. A Template opens with its blocks already connected so you can inspect it, change it and use it as a base for your own script.
 
-Use the block library and search field to add blocks. Drag a block onto the workspace and connect compatible shapes to build the flow. Standard Blockly categories provide control flow, variables, functions, text and values; Roblox categories group the game-specific blocks. The Luau output updates as the workspace changes.
+The block library is on the left. Use the search field when you know the name of a block, then drag it into the workspace and connect it to the rest of the script. The Luau output on the right updates as you work.
 
-A workspace can be built entirely from blocks: the Quick start workspaces and included examples are saved block projects. Use **Advanced** only for a small statement that does not yet have a block. Keep the surrounding flow in blocks where possible so the workspace remains readable and easy to adapt.
+The complete list of built-in Templates is in [Templates](./examples.md). It includes small examples for player events, parts, input, checkpoints, prompts, Humanoids and server-side shop validation.
 
-Use the mouse wheel or the zoom controls to change the workspace scale. Drag an unwanted block stack to the trash. Click the trash icon to inspect and restore recently deleted stacks.
+Use the mouse wheel or the zoom controls to change the workspace scale. Drag a block stack to the trash to remove it. The trash icon lets you review and restore deleted blocks.
+
+## Roblox block categories
+
+The Roblox blocks are grouped by the object or service they work with. The connection shapes show which values can be plugged into an input.
+
+| Category | Blocks available | Typical use |
+|---|---|---|
+| Instance | Get children, find child of class and get parent | Inspect a hierarchy or keep a reference to a Roblox object. |
+| Part | Get or set Position, CFrame, Size, Color and common state; ClickDetector clicked; Raycast | Build world interactions, configure BaseParts and detect scene geometry. |
+| Humanoid | Health, WalkSpeed, JumpPower, JumpHeight, MaxHealth, Died, HealthChanged and MoveTo | Control a character or non-player character, respond to health changes and move it to a Vector3 location. |
+| Camera | Current camera, camera type and camera CFrame | Create local camera behaviour such as a cutscene; use these blocks from a LocalScript. |
+| Services: Chat | Display a system message and react when a chat message is received | Implement local text-chat feedback. |
+| Services: Leaderstats | Add a number to a named leaderstat | Update a player-owned score after validating the gameplay action on the server. |
+| Services: Tweens | Tween a selected property of an Instance | Animate Transparency, Size, Position, CFrame or Volume over a duration. |
 
 ## Choose the script location
 
-Select the Roblox Studio location that records the intended script placement. The selection is saved with the `.blox` project and shown beside the generated Luau. Exporting writes a file; it does not insert a script into a place.
+Select the Roblox Studio location where the script will be placed. BloxCode Plus saves this choice in the `.blox` project and displays it beside the generated Luau. Exporting creates a file; it does not insert a script into a Roblox place.
 
 | Selection in BloxCode Plus | Intended Roblox Studio location | Typical responsibility |
 |---|---|---|
@@ -24,12 +38,14 @@ Select the Roblox Studio location that records the intended script placement. Th
 
 ## Save, open and export
 
-**Save .blox** stores the workspace, project name and selected Studio location in a project file. Use **Open** to continue a saved project or open an example from the repository. The `version` field in a `.blox` file identifies the project format, not the application release.
+**Save .blox** stores the workspace, project name and selected Studio location in a project file. Use **Open** to continue a saved project. The `version` field in a `.blox` file identifies the project format, not the application release.
 
 Use **Copy** to place the generated Luau on the clipboard, or **Export .lua** to write it to a file. Create the appropriate Script, LocalScript or ModuleScript in Roblox Studio, paste the generated Luau, and place it at the selected location.
 
 ## Test in Roblox Studio
 
-Before play-testing, check object names, hierarchy assumptions and service access after pasting the script. Test client requests, RemoteEvents and persistent data with server-side validation and appropriate error handling.
+Before pressing Play, check the object names and hierarchy used by the script. Test server and client code in the correct context, especially when using RemoteEvents or saved data. Keep server-side validation in place for requests coming from the client.
 
-For required objects in the included workspaces, see [Example projects](./examples.md).
+## Keyboard shortcuts
+
+`Ctrl+N` creates a new project, `Ctrl+S` saves the current `.blox` project, `Shift+Ctrl+E` exports the generated Luau, and `Shift+Ctrl+R` opens the project rename dialog. Deleted blocks remain available through the Blockly trashcan.

@@ -1,2 +1,7 @@
-.terraform
-server/server
+# Generated Electron dependencies and packages
+app/node_modules/
+app/out/
+
+# Local OS and editor files
+.DS_Store
+*.swp

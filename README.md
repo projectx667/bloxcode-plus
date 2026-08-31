@@ -2,21 +2,25 @@
 
 BloxCode Plus is a visual coding environment for Roblox Luau. Write Luau scripts by connecting blocks, then use the generated code in Roblox Studio.
 
-![Proximity Prompt Door in BloxCode Plus](./assets/proximity-prompt-door.png)
+![BloxCode Plus editor with an empty workspace and the Templates panel open](./docs/bloxcode-plus-interface.png)
+
+## Latest release
+
+The current public build is **Version 1.1** for Windows x64. Download [BloxCode-Plus-Windows-x64.zip](https://github.com/projectx667/bloxcode-plus/releases/tag/v1.1), extract it, and run `BloxCode Plus.exe`. A SHA-256 file is included for verification.
 
 ## Initial Release
 
-The first public build is available for Windows x64. Download [BloxCode-Plus-Windows-x64.zip](https://github.com/projectx667/bloxcode-plus/releases/tag/initial-release), extract it, and run `BloxCode Plus.exe`. A SHA-256 file is included for verification.
+The original first public build remains available as the [Initial Release](https://github.com/projectx667/bloxcode-plus/releases/tag/v1.0.0).
 
 ## What it includes
 
-The editor combines standard Blockly categories with 24 Roblox-specific blocks for players, objects, interactions, GUI, input, RemoteEvents, tools, sound, animation and DataStore patterns. Projects are stored as `.blox` workspaces and retain their selected Studio location. Four Quick start workspaces and openable examples are included.
+The editor combines standard Blockly categories with Roblox blocks for players, objects, interactions, GUI, input, RemoteEvents, tools, sound, animation and DataStore workflows. Projects are saved as `.blox` files together with their selected Studio location. The application also includes nine built-in Templates.
 
 ## Documentation
 
-[Using BloxCode Plus](./docs/using-bloxcode-plus.md) explains the workspace, block library, locations and project files.
+[Using BloxCode Plus](./docs/using-bloxcode-plus.md) covers the workspace, block library, script locations and project files.
 
-[Example projects](./docs/examples.md) describes the included workspaces and the Studio objects they require.
+[Templates](./docs/examples.md) lists and describes all nine built-in Templates.
 
 ## Community
 

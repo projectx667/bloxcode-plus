@@ -397,6 +397,18 @@ var bloxcodePlusToolbox = {
                     "kind": "block",
                     "type": "instance_get_children",
                 },
+                {
+                    "kind": "block",
+                    "type": "bxplus_instance_get_children",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_instance_find_child_of_class",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_instance_get_parent",
+                },
             ]
         },
         {
@@ -414,6 +426,22 @@ var bloxcodePlusToolbox = {
                 {
                     "kind": "block",
                     "type": "part_set_attribute",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_part_get_property",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_part_set_property",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_click_detector_clicked",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_workspace_raycast",
                 }
             ]
         },
@@ -447,7 +475,57 @@ var bloxcodePlusToolbox = {
                 {
                     "kind": "block",
                     "type": "humanoid_set_attribute",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_humanoid_get_property",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_humanoid_set_property",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_humanoid_died",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_humanoid_health_changed",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_humanoid_move_to",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_humanoid_get_health",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_humanoid_set_health",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_humanoid_take_damage",
                 }
+            ]
+        },
+        {
+            "kind": "category",
+            "name": "Camera",
+            "contents": [
+                {
+                    "kind": "block",
+                    "type": "bxplus_camera_current",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_camera_set_type",
+                },
+                {
+                    "kind": "block",
+                    "type": "bxplus_camera_set_cframe",
+                },
             ]
         },
         {
@@ -460,8 +538,48 @@ var bloxcodePlusToolbox = {
                 },
                 {
                     "kind": "category",
+                    "name": "Input",
+                    "contents": [
+                        {
+                            "kind": "block",
+                            "type": "bxplus_mouse_location",
+                        },
+                        {
+                            "kind": "block",
+                            "type": "bxplus_when_mouse_button",
+                        },
+                    ]
+                },
+                {
+                    "kind": "category",
+                    "name": "Chat",
+                    "contents": [
+                        {
+                            "kind": "block",
+                            "type": "bxplus_chat_system_message",
+                        },
+                        {
+                            "kind": "block",
+                            "type": "bxplus_chat_message_received",
+                        },
+                    ]
+                },
+                {
+                    "kind": "category",
                     "name": "Players",
                     "contents": [
+                        {
+                            "kind": "block",
+                            "type": "bxplus_get_player_from_character",
+                        },
+                        {
+                            "kind": "block",
+                            "type": "bxplus_for_each_player",
+                        },
+                        {
+                            "kind": "block",
+                            "type": "bxplus_player_respawn",
+                        },
                         {
                             "kind": "block",
                             "type": "get_players",
@@ -487,6 +605,16 @@ var bloxcodePlusToolbox = {
                             "type": "player_set_attribute",
                         }
                     ],
+                },
+                {
+                    "kind": "category",
+                    "name": "Leaderstats",
+                    "contents": [
+                        {
+                            "kind": "block",
+                            "type": "bxplus_leaderstat_add",
+                        },
+                    ]
                 },
                 {
                     "kind": "category",
@@ -641,6 +769,10 @@ var bloxcodePlusToolbox = {
                         {
                             "kind": "block",
                             "type": "tween_cancel",
+                        },
+                        {
+                            "kind": "block",
+                            "type": "bxplus_tween_property",
                         },
                     ],
                 }

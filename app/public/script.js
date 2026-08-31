@@ -1,7 +1,6 @@
 (function bootBloxCodePlus() {
   'use strict';
 
-  const AUTOSAVE_KEY = 'bloxcode-plus.autosave.v2';
   const PROJECT_FORMAT = 'bloxcode-plus-project';
   const DEFAULT_CODE = '-- Add blocks to generate Luau code.';
   const elements = {
@@ -13,6 +12,7 @@
     projectName: document.getElementById('project-name'),
     projectState: document.getElementById('project-state'),
     copyFeedback: document.getElementById('copy-feedback'),
+    validationMessage: document.getElementById('validation-message'),
     scriptTarget: document.getElementById('script-target'),
     renameDialog: document.getElementById('rename-dialog'),
     renameForm: document.getElementById('rename-project-form'),
@@ -34,9 +34,9 @@
 
   let workspace;
   let projectName = 'Untitled project';
-  let autosaveTimer;
   let feedbackTimer;
   let blockIndex = [];
+
   let blocklyPromptCallback = null;
   let blocklyConfirmCallback = null;
 
@@ -141,7 +141,6 @@
     displayProjectName();
     closeRenameDialog();
     setProjectState('Renamed');
-    queueAutosave();
   }
 
   function closeBlocklyPrompt(value) {
@@ -218,21 +217,6 @@
     };
   }
 
-  function saveAutosave() {
-    try {
-      localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(makeProject()));
-      setProjectState('Saved');
-    } catch (error) {
-      console.warn('Unable to autosave BloxCode Plus project:', error);
-      setProjectState('Autosave unavailable');
-    }
-  }
-
-  function queueAutosave() {
-    window.clearTimeout(autosaveTimer);
-    autosaveTimer = window.setTimeout(saveAutosave, 450);
-  }
-
   function generateLua() {
     try {
       Blockly.Lua.INFINITE_LOOP_TRAP = null;
@@ -247,7 +231,6 @@
 
   function updateWorkspace() {
     generateLua();
-    queueAutosave();
   }
 
   function inspectExportTarget() {
@@ -334,8 +317,10 @@
   }
 
   async function resetWorkspace() {
-    if (workspace.getAllBlocks(false).length && !(await requestConfirmation('Clear every block in this project? This cannot be undone.'))) return;
+    if (workspace.getAllBlocks(false).length && !(await requestConfirmation('Clear every block in this project?'))) return;
     workspace.clear();
+    if (workspace.trashcan?.emptyContents) workspace.trashcan.emptyContents();
+    window.setTimeout(() => workspace.trashcan?.emptyContents?.(), 0);
     projectName = 'Untitled project';
     displayProjectName();
     setProjectState('New project');
@@ -422,21 +407,6 @@
     displayProjectName();
     loadSerializedWorkspace(source);
     setProjectState('Project loaded');
-  }
-
-  function restoreAutosave() {
-    try {
-      const raw = localStorage.getItem(AUTOSAVE_KEY);
-      if (!raw) return;
-      const restored = JSON.parse(raw);
-      if (restored && restored.workspace) {
-        loadProject(restored);
-        setProjectState('Restored project');
-      }
-    } catch (error) {
-      console.warn('Unable to restore local project:', error);
-      localStorage.removeItem(AUTOSAVE_KEY);
-    }
   }
 
   async function saveProjectFile() {
@@ -536,18 +506,69 @@
 
   async function loadTemplate(templateName) {
     const templates = {
-      'hello-player': `<xml xmlns="https://developers.google.com/blockly/xml"><block type="bxplus_when_player_joins" x="70" y="70"><field name="PLAYER">player</field><statement name="DO"><block type="text_print"><value name="TEXT"><block type="text"><field name="TEXT">Welcome to the experience!</field></block></value></block></statement></block></xml>`,
-      'touched-part': `<xml xmlns="https://developers.google.com/blockly/xml"><variables><variable id="checkpointVar">checkpoint</variable><variable id="otherPartVar">otherPart</variable></variables><block type="custom_lua_code" x="70" y="70"><field name="CODE">local checkpoint = workspace:WaitForChild("Checkpoint")</field></block><block type="bxplus_when_part_touched" x="70" y="180"><field name="OTHER_PART" id="otherPartVar">otherPart</field><value name="PART"><block type="variables_get"><field name="VAR" id="checkpointVar">checkpoint</field></block></value><statement name="DO"><block type="text_print"><value name="TEXT"><block type="text"><field name="TEXT">A part was touched!</field></block></value></block></statement></block></xml>`,
-      'leaderstats': `<xml xmlns="https://developers.google.com/blockly/xml"><block type="bxplus_when_player_joins" x="70" y="70"><field name="PLAYER">player</field><statement name="DO"><block type="bxplus_create_leaderstat"><value name="PLAYER"><block type="variables_get"><field name="VAR">player</field></block></value><value name="NAME"><block type="text"><field name="TEXT">Coins</field></block></value><value name="VALUE"><block type="math_number"><field name="NUM">0</field></block></value></block></statement></block></xml>`,
-      'input-action': `<xml xmlns="https://developers.google.com/blockly/xml"><block type="bxplus_when_input_began" x="70" y="70"><field name="KEY">Space</field><value name="SERVICE"><block type="bxplus_input_service"></block></value><statement name="DO"><block type="text_print"><value name="TEXT"><block type="text"><field name="TEXT">Space pressed!</field></block></value></block></statement></block></xml>`
+      "hello-player": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"playerVar\">player</variable></variables><block type=\"bxplus_when_player_joins\" x=\"70\" y=\"70\"><field name=\"PLAYER\" id=\"playerVar\">player</field><statement name=\"DO\"><block type=\"text_print\"><value name=\"TEXT\"><block type=\"text\"><field name=\"TEXT\">Welcome to the experience!</field></block></value></block></statement></block></xml>",
+      "touched-part": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"otherPartVar\">otherPart</variable></variables><block type=\"bxplus_when_part_touched\" x=\"70\" y=\"70\"><field name=\"OTHER_PART\" id=\"otherPartVar\">otherPart</field><value name=\"PART\"><block type=\"instance_wait_for_child\"><field name=\"INSTANCE\">workspace</field><value name=\"NAME\"><block type=\"text\"><field name=\"TEXT\">Coin</field></block></value></block></value><statement name=\"DO\"><block type=\"text_print\"><value name=\"TEXT\"><block type=\"text\"><field name=\"TEXT\">A part was touched!</field></block></value></block></statement></block></xml>",
+      "leaderstats": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"playerVar\">player</variable><variable id=\"collectibleVar\">collectible</variable><variable id=\"hitVar\">hit</variable></variables><block type=\"variables_set\" x=\"70\" y=\"70\"><field name=\"VAR\" id=\"collectibleVar\">collectible</field><value name=\"VALUE\"><block type=\"instance_wait_for_child\"><field name=\"INSTANCE\">workspace</field><value name=\"NAME\"><block type=\"text\"><field name=\"TEXT\">Coin</field></block></value></block></value></block><block type=\"bxplus_when_player_joins\"><field name=\"PLAYER\" id=\"playerVar\">player</field><statement name=\"DO\"><block type=\"bxplus_create_leaderstat\"><value name=\"PLAYER\"><block type=\"variables_get\"><field name=\"VAR\" id=\"playerVar\">player</field></block></value><value name=\"NAME\"><block type=\"text\"><field name=\"TEXT\">Coins</field></block></value><value name=\"VALUE\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></statement></block><block type=\"bxplus_when_part_touched\" x=\"70\" y=\"360\"><field name=\"OTHER_PART\" id=\"hitVar\">hit</field><value name=\"PART\"><block type=\"variables_get\"><field name=\"VAR\" id=\"collectibleVar\">collectible</field></block></value><statement name=\"DO\"><block type=\"bxplus_leaderstat_add\"><value name=\"PLAYER\"><block type=\"bxplus_get_player_from_character\"><value name=\"CHARACTER\"><block type=\"bxplus_instance_get_parent\"><value name=\"INSTANCE\"><block type=\"variables_get\"><field name=\"VAR\" id=\"hitVar\">hit</field></block></value></block></value></block></value><value name=\"AMOUNT\"><block type=\"math_number\"><field name=\"NUM\">1</field></block></value><value name=\"NAME\"><block type=\"text\"><field name=\"TEXT\">Coins</field></block></value></block></statement></block><block type=\"bxplus_part_set_property\" x=\"70\" y=\"250\"><field name=\"PROPERTY\">CanCollide</field><value name=\"PART\"><block type=\"variables_get\"><field name=\"VAR\" id=\"collectibleVar\">collectible</field></block></value><value name=\"VALUE\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value></block></xml>",
+      "input-action": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"bxplus_when_input_began\" x=\"70\" y=\"70\"><field name=\"KEY\">Space</field><value name=\"SERVICE\"><block type=\"bxplus_input_service\"></block></value><statement name=\"DO\"><block type=\"text_print\"><value name=\"TEXT\"><block type=\"text\"><field name=\"TEXT\">Space pressed!</field></block></value></block></statement></block></xml>",
+      "checkpoint-progression": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"playerVar\">player</variable></variables><block type=\"bxplus_when_player_joins\"><field name=\"PLAYER\" id=\"playerVar\">player</field><statement name=\"DO\"><block type=\"bxplus_create_leaderstat\"><value name=\"PLAYER\"><block type=\"variables_get\"><field name=\"VAR\" id=\"playerVar\">player</field></block></value><value name=\"NAME\"><block type=\"text\"><field name=\"TEXT\">Checkpoint</field></block></value><value name=\"VALUE\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></statement></block></xml>",
+      "proximity-prompt-door": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"doorVar\">door</variable><variable id=\"promptVar\">prompt</variable><variable id=\"playerVar\">player</variable></variables><block type=\"variables_set\" x=\"70\" y=\"70\"><field name=\"VAR\" id=\"doorVar\">door</field><value name=\"VALUE\"><block type=\"instance_wait_for_child\"><field name=\"INSTANCE\">workspace</field><value name=\"NAME\"><block type=\"text\"><field name=\"TEXT\">Door</field></block></value></block></value><next><block type=\"variables_set\"><field name=\"VAR\" id=\"promptVar\">prompt</field><value name=\"VALUE\"><block type=\"proximity_prompt_new\"><field name=\"PARENT\" id=\"doorVar\">door</field></block></value><next><block type=\"proximity_prompt_set_text\"><field name=\"PROMPT\" id=\"promptVar\">prompt</field><value name=\"ACTION_TEXT\"><block type=\"text\"><field name=\"TEXT\">Open</field></block></value><value name=\"OBJECT_TEXT\"><block type=\"text\"><field name=\"TEXT\">Door</field></block></value><next><block type=\"proximity_prompt_set_property\"><field name=\"PROPERTY\">HoldDuration</field><field name=\"PROMPT\" id=\"promptVar\">prompt</field><value name=\"VALUE\"><block type=\"math_number\"><field name=\"NUM\">0.5</field></block></value></block></next></block></next></block></next></block><block type=\"proximity_prompt_triggered\" x=\"70\" y=\"360\"><field name=\"PROMPT\" id=\"promptVar\">prompt</field><field name=\"PLAYER\" id=\"playerVar\">player</field><statement name=\"DO\"><block type=\"bxplus_part_set_property\"><field name=\"PROPERTY\">CanCollide</field><value name=\"PART\"><block type=\"variables_get\"><field name=\"VAR\" id=\"doorVar\">door</field></block></value><value name=\"VALUE\"><block type=\"logic_boolean\"><field name=\"BOOL\">FALSE</field></block></value><next><block type=\"bxplus_part_set_property\"><field name=\"PROPERTY\">Transparency</field><value name=\"PART\"><block type=\"variables_get\"><field name=\"VAR\" id=\"doorVar\">door</field></block></value><value name=\"VALUE\"><block type=\"math_number\"><field name=\"NUM\">0.65</field></block></value><next><block type=\"wait\"><field name=\"AMOUNT\">2</field><next><block type=\"bxplus_part_set_property\"><field name=\"PROPERTY\">CanCollide</field><value name=\"PART\"><block type=\"variables_get\"><field name=\"VAR\" id=\"doorVar\">door</field></block></value><value name=\"VALUE\"><block type=\"logic_boolean\"><field name=\"BOOL\">TRUE</field></block></value><next><block type=\"bxplus_part_set_property\"><field name=\"PROPERTY\">Transparency</field><value name=\"PART\"><block type=\"variables_get\"><field name=\"VAR\" id=\"doorVar\">door</field></block></value><value name=\"VALUE\"><block type=\"math_number\"><field name=\"NUM\">0</field></block></value></block></next></block></next></block></next></block></next></block></statement></block></xml>",
+      "speed-boost": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"playerVar\">player</variable><variable id=\"characterVar\">character</variable><variable id=\"humanoidVar\">humanoid</variable></variables><block type=\"bxplus_when_player_joins\"><field name=\"PLAYER\" id=\"playerVar\">player</field><statement name=\"DO\"><block type=\"variables_set\"><field name=\"VAR\" id=\"characterVar\">character</field><value name=\"VALUE\"><block type=\"bxplus_player_character\"><value name=\"PLAYER\"><block type=\"variables_get\"><field name=\"VAR\">player</field></block></value></block></value><next><block type=\"variables_set\"><field name=\"VAR\" id=\"humanoidVar\">humanoid</field><value name=\"VALUE\"><block type=\"bxplus_instance_find_child_of_class\"><value name=\"INSTANCE\"><block type=\"variables_get\"><field name=\"VAR\" id=\"characterVar\">character</field></block></value><value name=\"CLASS\"><block type=\"text\"><field name=\"TEXT\">Humanoid</field></block></value></block></value><next><block type=\"bxplus_humanoid_set_property\"><field name=\"PROPERTY\">WalkSpeed</field><value name=\"HUMANOID\"><block type=\"variables_get\"><field name=\"VAR\" id=\"humanoidVar\">humanoid</field></block></value><value name=\"VALUE\"><block type=\"math_number\"><field name=\"NUM\">32</field></block></value></block></next></block></next></block></statement></block></xml>",
+      "health-and-damage": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"playerVar\">player</variable><variable id=\"characterVar\">character</variable><variable id=\"humanoidVar\">humanoid</variable></variables><block type=\"bxplus_when_player_joins\"><field name=\"PLAYER\" id=\"playerVar\">player</field><statement name=\"DO\"><block type=\"variables_set\"><field name=\"VAR\" id=\"characterVar\">character</field><value name=\"VALUE\"><block type=\"bxplus_player_character\"><value name=\"PLAYER\"><block type=\"variables_get\"><field name=\"VAR\" id=\"playerVar\">player</field></block></value></block></value><next><block type=\"variables_set\"><field name=\"VAR\" id=\"humanoidVar\">humanoid</field><value name=\"VALUE\"><block type=\"bxplus_instance_find_child_of_class\"><value name=\"INSTANCE\"><block type=\"variables_get\"><field name=\"VAR\" id=\"characterVar\">character</field></block></value><value name=\"CLASS\"><block type=\"text\"><field name=\"TEXT\">Humanoid</field></block></value></block></value><next><block type=\"bxplus_humanoid_set_health\"><value name=\"HUMANOID\"><block type=\"variables_get\"><field name=\"VAR\" id=\"humanoidVar\">humanoid</field></block></value><value name=\"HEALTH\"><block type=\"math_number\"><field name=\"NUM\">100</field></block></value><next><block type=\"bxplus_humanoid_take_damage\"><value name=\"HUMANOID\"><block type=\"variables_get\"><field name=\"VAR\" id=\"humanoidVar\">humanoid</field></block></value><value name=\"DAMAGE\"><block type=\"math_number\"><field name=\"NUM\">25</field></block></value><next><block type=\"text_print\"><value name=\"TEXT\"><block type=\"bxplus_humanoid_get_health\"><value name=\"HUMANOID\"><block type=\"variables_get\"><field name=\"VAR\" id=\"humanoidVar\">humanoid</field></block></value></block></value></block></next></block></next></block></next></block></next></block></statement></block></xml>",
+      "validated-shop": "<xml xmlns=\"https://developers.google.com/blockly/xml\"><variables><variable id=\"itemIdVar\">itemId</variable></variables><block type=\"bxplus_when_remote_event_received\"><field name=\"PLAYER\">player</field><field name=\"VALUE\" id=\"itemIdVar\">itemId</field><value name=\"EVENT\"><block type=\"bxplus_remote_event\"><value name=\"NAME\"><block type=\"text\"><field name=\"TEXT\">ShopRequest</field></block></value></block></value><statement name=\"DO\"><block type=\"text_print\"><value name=\"TEXT\"><block type=\"variables_get\"><field name=\"VAR\" id=\"itemIdVar\">itemId</field></block></value></block></statement></block></xml>"
     };
     if (!templates[templateName]) return;
     if (workspace.getAllBlocks(false).length && !(await requestConfirmation('Replace the current workspace with this template?'))) return;
     projectName = templateName.replace(/-/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
-    elements.scriptTarget.value = templateName === 'input-action' ? 'local-player' : 'server-script';
+    const templateTargets = {
+      'hello-player': 'server-script',
+      'touched-part': 'server-script',
+      'leaderstats': 'server-script',
+      'input-action': 'local-player',
+      'checkpoint-progression': 'server-script',
+      'proximity-prompt-door': 'server-script',
+      'speed-boost': 'server-script',
+      'health-and-damage': 'server-script',
+      'validated-shop': 'server-script'
+    };
+    elements.scriptTarget.value = templateTargets[templateName] || 'server-script';
+    document.querySelectorAll('[data-template]').forEach((button) => {
+      const active = button.dataset.template === templateName;
+      button.classList.toggle('is-active', active);
+      button.toggleAttribute('aria-current', active);
+    });
     displayProjectName();
     loadSerializedWorkspace(templates[templateName]);
     setProjectState('Template loaded');
+  }
+
+  const SERVER_ONLY_BLOCKS = new Set([
+    'bxplus_when_player_joins',
+    'bxplus_create_leaderstat',
+    'bxplus_load_data_safely',
+    'bxplus_update_number_safely',
+    'bxplus_when_remote_event_received',
+    'bxplus_fire_all_clients'
+  ]);
+  const CLIENT_ONLY_BLOCKS = new Set([
+    'bxplus_when_input_began',
+    'gui_button_mouse1_click',
+    'bxplus_when_button_clicked'
+  ]);
+
+  function validateScriptTarget() {
+    if (!workspace || !elements.validationMessage) return;
+    const target = elements.scriptTarget.value;
+    const blocks = workspace.getAllBlocks(false);
+    const hasServerOnly = blocks.some((block) => SERVER_ONLY_BLOCKS.has(block.type));
+    const hasClientOnly = blocks.some((block) => CLIENT_ONLY_BLOCKS.has(block.type));
+    let message = '';
+    if (target !== 'server-script' && hasServerOnly) {
+      message = 'ServerScriptService is recommended for this workspace.';
+    } else if (target === 'server-script' && hasClientOnly) {
+      message = 'A client location is recommended for this workspace.';
+    }
+    elements.validationMessage.textContent = message;
+    elements.validationMessage.classList.toggle('note', Boolean(message));
   }
 
   function bindControls() {
@@ -555,8 +576,8 @@
     elements.scriptTarget.addEventListener('change', () => {
       const target = window.BloxCodePlus.scriptContexts.targets[elements.scriptTarget.value];
       setProjectState(target ? target.location : 'Target updated');
-      queueAutosave();
-    });
+      validateScriptTarget();
+      });
     elements.clearSearch.addEventListener('click', () => {
       elements.search.value = '';
       renderSearchResults('');
@@ -636,12 +657,13 @@
     }
     updateWorkspace();
     applyBlockTextContrast();
+    validateScriptTarget();
   });
 
   buildBlockIndex();
   bindControls();
   displayProjectName();
-  restoreAutosave();
   generateLua();
   Blockly.svgResize(workspace);
+  validateScriptTarget();
 }());
